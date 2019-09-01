@@ -14,6 +14,13 @@ deal.II.
 
 The repository structure is as follows:
 
+loki
+----
+
+This subdirectory contains the sources for a program computing the direct
+scattering problem of a plasmonic crystal. The program creates the
+necessary configuration file upon first invocation.
+
 sobek
 -----
 
