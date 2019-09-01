@@ -1,0 +1,53 @@
+# Listing of Parameters
+# ---------------------
+subsection A - Base Parameter
+  # base name for all output files
+  set basename         = tubes-XXXX
+
+  # number of cycles
+  set number of cycles = 1
+
+  # use adaptive, local refinement with DWR method
+  set refine adaptive  = false
+end
+
+
+subsection B - Coefficients
+  # Fermi level.
+  set E_F                = 1, 0
+
+  # Interlayer spacing for Drude model.
+  set d                  = 20.7229, 0
+
+  # Relative permittivity for material id 1.
+  set material 1 epsilon = 1, 0
+
+  # Relative permittivity for material id 2.
+  set material 2 epsilon = 1, 0
+
+  # Angular frequency.
+  set omega              = XXXX, 0
+end
+
+
+subsection C - Discretization
+  # Geometry to use, valid options are "circle", "planar"
+  set geometry             = circle
+
+  # Initial refinement of the geometry
+  set initial refinement   = 7
+
+  # Order of the finite element space
+  set order finite element = 1
+
+  # Order of the mapping
+  set order mapping        = 1
+
+  # Order of the quadrature rule
+  set order quadrature     = 3
+
+  # Radius of innner circle
+  set radius               = 0.75
+end
+
+
