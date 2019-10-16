@@ -102,8 +102,8 @@ namespace grendel
     for (auto it : triangulation.cell_iterators()) {
       for (unsigned int v = 0; v < GeometryInfo<dim>::vertices_per_cell; ++v) {
         auto &vertex = it->vertex(v);
-        if (std::abs(std::abs(vertex[1]) - 5.0) < 1.e-10) {
-          vertex[1] *= layer_position_ / 5.0;
+        if (std::abs(std::abs(vertex[1]) - geometry_scaling_ / 3.0) < 1.e-10) {
+          vertex[1] *= layer_position_ / (geometry_scaling_ / 3.0);
         }
       }
     }
