@@ -42,7 +42,7 @@ namespace grendel
 
     layer_position_ = 2.5;
     add_parameter("layer position",
-                  refinement_,
+                  layer_position_,
                   "upper and lower height of the first and last layer");
 
     no_layers_ = 2;
