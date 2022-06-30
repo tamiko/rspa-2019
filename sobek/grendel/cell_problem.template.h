@@ -37,28 +37,32 @@ namespace grendel
   {
     deallog << "CellProblem<dim>::setup_system()" << std::endl;
 
-    dof_handler_.initialize(discretization_->triangulation(),
-                            discretization_->finite_element());
+    dof_handler_ = std::make_unique<dealii::DoFHandler<dim>>(
+        discretization_->triangulation());
+    dof_handler_->distribute_dofs(discretization_->finite_element());
 
-    deallog << "        " << dof_handler_.n_dofs() << " DoFs" << std::endl;
+    deallog << "        " << dof_handler_->n_dofs() << " DoFs" << std::endl;
 
-    DoFRenumbering::Cuthill_McKee(dof_handler_);
+    DoFRenumbering::Cuthill_McKee(*dof_handler_);
 
     setup_constraints();
 
-    DynamicSparsityPattern c_sparsity(dof_handler_.n_dofs(),
-                                      dof_handler_.n_dofs());
+    DynamicSparsityPattern c_sparsity(dof_handler_->n_dofs(),
+                                      dof_handler_->n_dofs());
     DoFTools::make_sparsity_pattern(
-        dof_handler_, c_sparsity, affine_constraints_, false);
+        *dof_handler_, c_sparsity, affine_constraints_, false);
     sparsity_pattern_.copy_from(c_sparsity);
+
+    std::ofstream out("sparsity_pattern.svg");
+    sparsity_pattern_.print_svg(out);
 
     system_matrix_.reinit(sparsity_pattern_);
 
     for (auto &solution : solution_)
-      solution.reinit(dof_handler_.n_dofs());
+      solution.reinit(dof_handler_->n_dofs());
 
     for (auto &right_hand_side : right_hand_side_)
-      right_hand_side.reinit(dof_handler_.n_dofs());
+      right_hand_side.reinit(dof_handler_->n_dofs());
   }
 
 
@@ -68,15 +72,15 @@ namespace grendel
     affine_constraints_.clear();
 
     for (int i = 0; i < dim; ++i)
-      DoFTools::make_periodicity_constraints(dof_handler_,
+      DoFTools::make_periodicity_constraints(*dof_handler_,
                                              /*b_id1    */ i,
                                              /*b_id2    */ dim + i,
                                              /*direction*/ i,
                                              affine_constraints_);
 
-    DoFTools::make_hanging_node_constraints(dof_handler_, affine_constraints_);
+    DoFTools::make_hanging_node_constraints(*dof_handler_, affine_constraints_);
 
-    pin_a_dof(this->dof_handler_, this->affine_constraints_);
+    pin_a_dof(*(this->dof_handler_), this->affine_constraints_);
 
     affine_constraints_.close();
   }
@@ -281,8 +285,8 @@ namespace grendel
 
     /* And run a workstream to assemble the matrix: */
 
-    WorkStream::run(dof_handler_.begin_active(),
-                    dof_handler_.end(),
+    WorkStream::run(dof_handler_->begin_active(),
+                    dof_handler_->end(),
                     local_assemble_system,
                     copy_local_to_global,
                     AssemblyScratchData<dim>(*this->discretization_),
@@ -440,8 +444,8 @@ namespace grendel
 
     /* And run a workstream to assemble the matrix: */
 
-    WorkStream::run(dof_handler_.begin_active(),
-                    dof_handler_.end(),
+    WorkStream::run(dof_handler_->begin_active(),
+                    dof_handler_->end(),
                     local_integrate,
                     sum_up,
                     AssemblyScratchData<dim>(*this->discretization_),
@@ -453,7 +457,7 @@ namespace grendel
   template <int dim>
   void CellProblem<dim>::clear()
   {
-    dof_handler_.clear();
+    dof_handler_->clear();
     sparsity_pattern_.reinit(0, 0, 0);
     affine_constraints_.clear();
 

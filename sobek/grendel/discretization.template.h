@@ -89,8 +89,8 @@ namespace grendel
      */
 
     mapping_fe_.reset(new FESystem<dim>(FE_Q<dim>(order_finite_element_), dim));
-    mapping_dof_handler_.reset(new DoFHandler<dim>());
-    mapping_dof_handler_->initialize(triangulation, *mapping_fe_);
+    mapping_dof_handler_.reset(new DoFHandler<dim>(triangulation));
+    mapping_dof_handler_->distribute_dofs(*mapping_fe_);
 
     mapping_displacement_.reset(
         new Vector<double>(mapping_dof_handler_->n_dofs()));

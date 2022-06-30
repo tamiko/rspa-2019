@@ -52,7 +52,7 @@ namespace grendel
 
     /* Implementation: */
 
-    dealii::DoFHandler<dim> dof_handler_;
+    std::unique_ptr<dealii::DoFHandler<dim>> dof_handler_;
     A_RO(dof_handler)
 
     dealii::SparsityPattern sparsity_pattern_;
